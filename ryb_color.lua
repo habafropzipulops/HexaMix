@@ -30,6 +30,14 @@ function color:convertToRgb()
              1.0 + b * ( -0.4 + r * (0.9 - 1.1 * y ) + 0.6 * y ) - y + r * ( y - 1.0 ) }
 end
 
+--[[
+function color:split()
+    local r1, y1, b1 = 2 * color.r - math.random(), 2 * color.y - math.random(), 2 * color.b - math.random()
+    local r2, y2, b2 = 2 * color.r - r1, 2 * color.y - y1, 2 * color.b - b1
+    return RYBcolor:new(r1, y1, b1), RYBcolor:new(r2, y2, b2)
+end
+]]--
+
     setmetatable(color, self)
     self.__index = self; return color
 end

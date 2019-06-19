@@ -31,3 +31,25 @@ function getUniqueElements( table )
 
     return uniqTable
 end
+
+function shuffle( table )
+
+    for i = #table, 2, -1 do
+        j = math.random(i)
+        table[i], table[j] = table[j], table[i]
+    end
+
+    return shuffle
+end
+
+function getRandomItem( table )
+    local keys = {}
+
+    for key, _ in pairs( table ) do
+        keys[#keys + 1] = key
+    end
+
+    index = keys[math.random(1, #keys)]
+
+    return table[index]
+end

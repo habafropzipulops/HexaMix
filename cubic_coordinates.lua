@@ -29,9 +29,9 @@ function CubicCoordinates:new( xCoord, yCoord, zCoord )
         return true
     end
 
-    function coords.convertToPixels( hexEgdeSize, displayCenter )
-        hexCenterX = hexEgdeSize * cos30 * ( 2 * coords.x + coords.z ) + displayCenter.x
-        hexCenterY = 3 * cos60 * hexEgdeSize * coords.z + displayCenter.y
+    function coords.convertToPixels( hexEgdeSize, coordinateCenter )
+        hexCenterX = hexEgdeSize * cos30 * ( 2 * coords.x + coords.z ) + coordinateCenter.x
+        hexCenterY = 3 * cos60 * hexEgdeSize * coords.z + coordinateCenter.y
         return { x = hexCenterX, y = hexCenterY }
     end
 

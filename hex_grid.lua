@@ -5,6 +5,7 @@ local cos30 = math.sqrt(3) / 2
 local cos60 = 0.5
 local displayWidth = display.contentWidth
 local displayHeigth = display.contentHeight
+local origin = { x = 0.0, y = 0.0 }
 local displayCenter = { x = (0.5 * displayWidth), y = (0.5 * displayHeigth) }
 
 HexGrid = {}
@@ -28,49 +29,58 @@ local function findBorderNeighborHexes( hexCoords, borderLevel )
     return borderHexNeighbors
 end
 
-local function getGridProportions( gridCoords )
-    local gridLeft, gridDown = -1000000, -1000000
-    local gridRight, gridUp = 1000000, 1000000
+local function getGridBorders( gridCoords )
+    local leftBorder, lowerBorder = -math.huge, -math.huge
+    local rightBorder, upperBorder = math.huge, math.huge
 
-        for _,coords in ipairs( gridCoords ) do
-            if gridLeft < coords.x then gridLeft = coords.x end
-            if gridRight > coords.x then gridRight = coords.x end
-            if gridDown < coords.z then gridDown = coords.z end
-            if gridUp > coords.z then gridUp = coords.z end
-        end
+    for _,coords in pairs( gridCoords ) do
+        if leftBorder < coords.x then leftBorder = coords.x end
+        if rightBorder > coords.x then rightBorder = coords.x end
+        if lowerBorder < coords.z then lowerBorder = coords.z end
+        if upperBorder > coords.z then upperBorder = coords.z end
+    end
 
-    local gridWidth = - gridRight + gridLeft + 1
-    local gridHeight = - gridUp + gridDown + 1
-    
-    return { width = gridWidth, height = gridHeight }
+    return { left = leftBorder, right = rightBorder,
+             lower = lowerBorder, upper = upperBorder }
 end
 
+local function findCoordinateCenter( borders, hexEgdeSize, displayCenter )
+    local x = ( borders.right + borders.left ) / 2 
+    local z = ( borders.upper + borders.lower ) / 2
+    local y = - x - z
+    local centerCoords = CubicCoordinates:new( x, y, z )
+    local pixelCoords = centerCoords.convertToPixels( hexEgdeSize, origin )
 
-local function calculateHexEgdeSize( gridCoords, displayHeigth, displayWidth  )
-    local gridProportions = getGridProportions( gridCoords )
+    return { x = displayCenter.x - pixelCoords.x, y = displayCenter.y - pixelCoords.y}
+end
+
+local function calculateHexEgdeSize( borders, displayHeigth, displayWidth  )
+    local gridWidth = math.abs(borders.left) + math.abs(borders.right) + 1
+    local gridHeight = math.abs(borders.lower) + math.abs(borders.upper) + 1
     local displayRatio = displayHeigth / displayWidth
-    local gridRatio = gridProportions.height / gridProportions.width
+    local gridRatio = gridHeight / gridWidth
+    local hexEgdeSize = 0
+
     local k = math.sqrt( displayRatio / gridRatio )
 
     if k >= 1 then
-        hexEgdeSize = displayWidth / ( 2 * gridProportions.width )
+        hexEgdeSize = displayWidth / ( 2 * gridWidth )
     else
-        hexEgdeSize = k * displayWigth / ( 2 * gridProportions.width )
+        hexEgdeSize = k * displayWidth / ( 2 * gridWidth )
     end
 
     return hexEgdeSize
 end
 
-function HexGrid:new( gridSize )
+function HexGrid:new()
 
     local grid = {}
     grid.coords = { defaultCenter }
-    grid.size = gridSize
 
-    function grid:coordsGeneration()
+    function grid:standardGridGeneration( gridLevel )
         local borderHexes = { defaultCenter }
         
-        for borderLevel = 1, grid.size do
+        for borderLevel = 1, gridLevel do
             local newBorderHexes = {}
             
             for _,hexCoord in ipairs( borderHexes ) do
@@ -84,14 +94,43 @@ function HexGrid:new( gridSize )
 
     end
 
+    function grid:randomGridGeneration( hexAmount )
+        local randomHexes = {}
+        randomHexes[ defaultCenter.uniqKey() ] = defaultCenter
+        local gridSize = 1
+        local neighborsIndex = { 1, 2, 3, 4, 5, 6 }
+
+        while gridSize < hexAmount do
+            randomHex = getRandomItem( randomHexes )
+            shuffle( neighborsIndex )
+
+            for _, index in ipairs(neighborsIndex) do
+                newRandomHex = randomHex + relativeNeighbors[index]
+                key = newRandomHex.uniqKey()
+
+                if not randomHexes[key] then
+                    randomHexes[key] = newRandomHex
+                    gridSize = gridSize + 1
+                    break
+                end 
+
+            end
+
+        end
+        grid.coords = randomHexes
+
+    end
+
     function grid:drawGrid( event )
         local hexEgdeSize
         local gap = 2
         local drawnGrid = {}
-        local hexEgdeSize = calculateHexEgdeSize( grid.coords, displayHeigth, displayWidth )
+        local gridBorders = getGridBorders( grid.coords )
+        local hexEgdeSize = calculateHexEgdeSize( gridBorders, displayHeigth, displayWidth )
+        local coordinateCenter = findCoordinateCenter( gridBorders, hexEgdeSize, displayCenter )
 
-        for _, hexCubicCoords in ipairs(grid.coords) do
-            hexCenter = hexCubicCoords.convertToPixels( hexEgdeSize, displayCenter )
+        for _, hexCubicCoords in pairs(grid.coords) do
+            hexCenter = hexCubicCoords.convertToPixels( hexEgdeSize, coordinateCenter )
 
             newHex = Hexagon:new( hexCenter, hexEgdeSize - gap )
          
