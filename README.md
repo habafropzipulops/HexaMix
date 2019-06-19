@@ -10,10 +10,10 @@ User should mix color hexes to achieve the desired color. When the desired color
 - Creation of hexagonal grid with custom size
 - Behavior of the hexes and their interaction
 - Mixing colors(RYB format) of hexex
+- Creation of random hexagonal grid
 
 # Future functional:
 
-- Creation of random hexagonal grid
 - Color decomposition
 - Add win condition
 - Add userfriendly interface 
