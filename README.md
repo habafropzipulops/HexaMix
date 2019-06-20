@@ -11,9 +11,9 @@ User should mix color hexes to achieve the desired color. When the desired color
 - Behavior of the hexes and their interaction
 - Mixing colors(RYB format) of hexex
 - Creation of random hexagonal grid
+- Color decomposition
 
 # Future functional:
 
-- Color decomposition
 - Add win condition
-- Add userfriendly interface 
+- Add userfriendly interface
