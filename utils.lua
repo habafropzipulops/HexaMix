@@ -8,8 +8,7 @@ function mergeTables( first_table, second_table )
 end
 
 function itemAmount( table, item )
-    local count
-    count = 0
+    local count = 0
 
     for _, value in pairs( table ) do
         if item == value then count = count + 1 end
@@ -21,9 +20,9 @@ end
 function getUniqueElements( table )
     local uniqTable = {}
     
-    for _, value in ipairs(table) do
+    for _, value in ipairs( table ) do
     
-        if (itemAmount( uniqTable, value ) == 0) then
+        if ( itemAmount( uniqTable, value ) == 0 ) then
             uniqTable[#uniqTable + 1] = value
         end
 
@@ -33,23 +32,24 @@ function getUniqueElements( table )
 end
 
 function shuffle( table )
+    local j
 
     for i = #table, 2, -1 do
         j = math.random(i)
         table[i], table[j] = table[j], table[i]
     end
 
-    return shuffle
 end
 
 function getRandomItem( table )
     local keys = {}
+    local randomKey
 
     for key, _ in pairs( table ) do
         keys[#keys + 1] = key
     end
 
-    index = keys[math.random(1, #keys)]
+    randomKey = keys[math.random(1, #keys)]
 
-    return table[index]
+    return table[randomKey]
 end

@@ -15,7 +15,7 @@ local overlappingHexStrokeColor = { 0.0, 1.0, 0.0 }
 local function areNeighbors( firstHex, secondHex )
     for _, relativeNeighbor in ipairs(relativeNeighbors) do
 
-        if (firstHex.coords + relativeNeighbor == secondHex.coords) then
+        if ( firstHex.coords + relativeNeighbor == secondHex.coords ) then
             return true
         end
 
@@ -25,7 +25,7 @@ local function areNeighbors( firstHex, secondHex )
 end
 
 local function areOverlapped( firstObj, secondObj )
-    if not (firstObj and secondObj) then
+    if not ( firstObj and secondObj ) then
         return false
     end
     
